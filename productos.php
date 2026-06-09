@@ -75,42 +75,42 @@ href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 
             <div style="display:flex; align-items:center;">
 
-                <img src="img/logo_tienda.png"
-                    width="60"
-                    height="60"
-                    style="margin-right:15px;">
+            <img src="img/logo_tienda.png"
+                width="60"
+                height="60"
+                style="margin-right:15px;">
 
-                <h2 style="margin:0;">
-                    Gestión de Inventario - Productos
-                </h2>
+            <h2 style="margin:0;">
+                Gestión de Inventario - Productos
+            </h2>
 
-            </div>
+            <a href="nuevo_producto.php"
+            style="
+            margin-left:auto;
+            background:white;
+            color:black;
+            padding:12px 25px;
+            border-radius:10px;
+            text-decoration:none;
+            font-size:20px;
+            font-weight:bold;
+            display:inline-block;
+            ">
 
-                <p style="
-                    margin-top:5px;
-                    font-size:20px;
-                    font-weight:bold;
-                    color:white;
-                ">
-                    Por: Stiven Vallejo
-                </p>
+            ➕ Nuevo Producto
 
-                <a href="#"
-                    style="
-                    float:right;
-                    margin-top:-70px;
-                    background:white;
-                    color:black;
-                    padding:12px 25px;
-                    border-radius:10px;
-                    text-decoration:none;
-                    font-size:20px;
-                    font-weight:bold;
-                    ">
-                    ➕ Nuevo Producto
-                </a>
+            </a>
 
             </div>
+
+            <p style="
+            margin-top:10px;
+            font-size:20px;
+            font-weight:bold;
+            color:white;
+            ">
+                Por: Stiven Vallejo
+            </p>
 
         <div class="card-body">
 
@@ -198,13 +198,16 @@ href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 
                         <td>
 
-                            <button class="btn btn-warning btn-sm">
+                            <a href="editar_producto.php?id=<?php echo $fila['pro_id']; ?>"
+                                class="btn btn-warning btn-sm">
                                 ✏️ Editar
-                            </button>
+                            </a>
 
-                            <button class="btn btn-danger btn-sm">
+                            <a href="eliminar.php?id=<?php echo $fila['pro_id']; ?>"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Está seguro de eliminar este producto?')">
                                 🗑 Eliminar
-                            </button>
+                            </a>
 
                         </td>
 
