@@ -9,19 +9,37 @@ $stmt = $conexion->prepare($sql);
 $stmt->execute([$id]);
 
 $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+$categorias = $conexion->query("SELECT * FROM categorias");
+$marcas = $conexion->query("SELECT * FROM marcas");
 
 if(isset($_POST['actualizar']))
 {
     $descripcion = $_POST['descripcion'];
     $stock = $_POST['stock'];
     $precio = $_POST['precio'];
+    $categoria = $_POST['categoria'];
+    $marca = $_POST['marca'];
+    $imagen = $producto['pro_imagen'];
+
+    if($_FILES['imagen']['name'] != "")
+    {
+        $imagen = $_FILES['imagen']['name'];
+
+        move_uploaded_file(
+            $_FILES['imagen']['tmp_name'],
+            "img/" . $imagen
+        );
+    }
 
     $sqlUpdate = "
     UPDATE productos
     SET
         pro_descripcion = ?,
         pro_stock = ?,
-        pro_precio_v = ?
+        pro_precio_v = ?,
+        pro_imagen = ?,
+        cat_id = ?,
+        mar_id = ?
     WHERE pro_id = ?
     ";
 
@@ -31,10 +49,13 @@ if(isset($_POST['actualizar']))
         $descripcion,
         $stock,
         $precio,
+        $imagen,
+        $categoria,
+        $marca,
         $id
     ]);
 
-    header("Location: productos.php");
+    header("Location: productos.php?mensaje=actualizado");
     exit();
 }
 
@@ -45,6 +66,7 @@ if(isset($_POST['actualizar']))
 
 <head>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="UTF-8">
 <title>Editar Producto</title>
 
@@ -66,7 +88,7 @@ if(isset($_POST['actualizar']))
 
         <div class="card-body">
 
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
 
                 <div class="mb-3">
                     <label>Descripción</label>
@@ -77,6 +99,72 @@ if(isset($_POST['actualizar']))
                         class="form-control"
                         value="<?php echo $producto['pro_descripcion']; ?>"
                         required>
+                </div>
+
+                <div class="mb-3">
+
+                    <label>Categoría</label>
+
+                    <select name="categoria" class="form-control">
+
+                    <?php
+                    while($cat = $categorias->fetch(PDO::FETCH_ASSOC))
+                    {
+                    ?>
+
+                    <option
+                    value="<?php echo $cat['cat_id']; ?>"
+                    <?php
+                    if($cat['cat_id']==$producto['cat_id'])
+                    {
+                        echo "selected";
+                    }
+                    ?>
+                    >
+
+                    <?php echo $cat['cat_nombre']; ?>
+
+                    </option>
+
+                    <?php
+                    }
+                    ?>
+
+                    </select>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label>Marca</label>
+
+                    <select name="marca" class="form-control">
+
+                    <?php
+                    while($mar = $marcas->fetch(PDO::FETCH_ASSOC))
+                    {
+                    ?>
+
+                    <option
+                    value="<?php echo $mar['mar_id']; ?>"
+                    <?php
+                    if($mar['mar_id']==$producto['mar_id'])
+                    {
+                        echo "selected";
+                    }
+                    ?>
+                    >
+
+                    <?php echo $mar['mar_nombre']; ?>
+
+                    </option>
+
+                    <?php
+                    }
+                    ?>
+
+                    </select>
+
                 </div>
 
                 <div class="mb-3">
@@ -100,6 +188,30 @@ if(isset($_POST['actualizar']))
                         class="form-control"
                         value="<?php echo $producto['pro_precio_v']; ?>"
                         required>
+                </div>
+
+                <div class="mb-3">
+
+                    <label>Imagen Actual</label>
+
+                    <br>
+
+                    <img
+                    src="img/<?php echo $producto['pro_imagen']; ?>"
+                    width="120"
+                    class="img-thumbnail">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label>Nueva Imagen</label>
+
+                    <input
+                    type="file"
+                    name="imagen"
+                    class="form-control">
+
                 </div>
 
                 <button

@@ -13,7 +13,7 @@ if(isset($_GET['id']))
     $stmt->execute([$id]);
 }
 
-header("Location: productos.php");
+header("Location: productos.php?mensaje=eliminado");
 exit();
 
 ?>
