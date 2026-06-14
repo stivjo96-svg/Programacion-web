@@ -56,6 +56,8 @@ href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 td{
@@ -108,21 +110,24 @@ WHERE pro_paga_iva = 1
                     Gestión de Inventario - Productos
                 </h2>
 
-                <a href="nuevo_producto.php"
-                    style="
-                    margin-left:auto;
-                    background:white;
-                    color:black;
-                    padding:12px 25px;
-                    border-radius:10px;
-                    text-decoration:none;
-                    font-size:20px;
-                    font-weight:bold;
-                    ">
+                <div style="margin-left:auto;">
 
-                    ➕ Nuevo Producto
+                <a href="reporte_pdf.php"
+                target="_blank"
+                class="btn btn-danger btn-lg me-2">
+
+                📄 Exportar PDF
 
                 </a>
+
+                <a href="nuevo_producto.php"
+                class="btn btn-light btn-lg">
+
+                ➕ Nuevo Producto
+
+                </a>
+
+                </div>
 
             </div>
 
@@ -221,6 +226,42 @@ WHERE pro_paga_iva = 1
                         💰 Con IVA:
                         <strong><?php echo $conIVA; ?></strong>
                     </div>
+                </div>
+
+            </div>
+
+            <div class="row mt-4">
+
+                <div class="col-md-6">
+
+                    <div class="card shadow">
+
+                        <div class="card-header bg-primary text-white">
+                            Productos por Categoría
+                        </div>
+
+                        <div class="card-body">
+                            <canvas id="graficoCategorias" height="100"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="card shadow">
+
+                        <div class="card-header bg-success text-white">
+                            Estado del Inventario
+                        </div>
+
+                        <div class="card-body">
+                            <canvas id="graficoStock" style="height:250px;"></canvas>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -355,6 +396,52 @@ WHERE pro_paga_iva = 1
 
 </div>
 
+<?php
+
+$bebidas = $conexion->query("
+SELECT COUNT(*) 
+FROM productos
+WHERE cat_id = 1
+")->fetchColumn();
+
+$lacteos = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE cat_id = 3
+")->fetchColumn();
+
+$limpieza = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE cat_id = 4
+")->fetchColumn();
+
+$dulces = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE cat_id = 5
+")->fetchColumn();
+
+$snacks = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE cat_id = 2
+")->fetchColumn();
+
+$normal = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE pro_stock > pro_stock_min
+")->fetchColumn();
+
+$bajo = $conexion->query("
+SELECT COUNT(*)
+FROM productos
+WHERE pro_stock <= pro_stock_min
+")->fetchColumn();
+
+?>
+
 <script>
 
 $(document).ready(function () {
@@ -368,6 +455,83 @@ $(document).ready(function () {
         }
 
     });
+
+});
+
+</script>
+
+<script>
+
+const ctx1 =
+document.getElementById('graficoCategorias');
+
+new Chart(ctx1, {
+
+type: 'bar',
+
+data: {
+
+labels: [
+'Bebidas',
+'Lácteos',
+'Limpieza',
+'Dulces',
+'Snacks'
+],
+
+datasets: [{
+
+label: 'Productos',
+
+data: [
+
+<?php echo $bebidas; ?>,
+<?php echo $lacteos; ?>,
+<?php echo $limpieza; ?>,
+<?php echo $dulces; ?>,
+<?php echo $snacks; ?>
+
+]
+
+}]
+
+}
+
+});
+
+</script>
+
+<script>
+
+const ctx2 =
+document.getElementById('graficoStock');
+
+new Chart(ctx2, {
+
+    type: 'pie',
+
+    data: {
+
+        labels: [
+            'Normal',
+            'Stock Bajo'
+        ],
+
+        datasets: [{
+
+            data: [
+                <?php echo $normal; ?>,
+                <?php echo $bajo; ?>
+            ]
+
+        }]
+
+    },   
+
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
 
 });
 
